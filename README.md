@@ -39,3 +39,5 @@ To end a recording, just click the "RECORD" button again so that it is unchecked
 
 Clicking "QUIT" will close the application.
 
+sudo apt-get install python3.6-tk
+
