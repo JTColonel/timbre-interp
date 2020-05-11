@@ -37,13 +37,11 @@ def change_params(epoch, logs):
 
 def get_arguments():
 	parser = argparse.ArgumentParser()
-	parser.add_argument('--filename_in_1', type=str)
+	parser.add_argument('--filename_in', type=str)
 	parser.add_argument('--filename_out', type=str)
-	parser.add_argument('--net_type', type=str)
-	parser.add_argument('--mode', type=str)
+	parser.add_argument('--mode', type=str, default='train')
 	parser.add_argument('--trained_model_name', type=str, default='')
 	parser.add_argument('--n_epochs', type=int, default=5)
-	parser.add_argument('--skip', type=bool, default=False)
 	return parser.parse_args()
 
 class Manne:
@@ -58,16 +56,10 @@ class Manne:
 		self.dnb_net = []
 		self.encoder_widths = []
 		self.decoder_widths = []
-
-		# self.z_mean = K.placeholder(shape=(8,))
-		# self.z_log_var = K.placeholder(shape=(8,))
 		self.beta_changer = []
 
 		self.n_epochs = args.n_epochs
-		self.net_type = args.net_type
-		self.skip = args.skip
-		self.filename_in_1 = args.filename_in_1
-		# self.filename_in_2 = args.filename_in_2
+		self.filename_in = args.filename_in
 		self.filename_out = args.filename_out
 		self.trained_model_name = args.trained_model_name
 
@@ -86,22 +78,6 @@ class Manne:
 		self.evaluate_net()
 		self.save_latents()
 
-	def sampling(self,args):
-		self.z_mean, self.z_log_var = args
-		batch = K.shape(self.z_mean)[0]
-		dim = K.int_shape(self.z_mean)[1]
-		epsilon = K.random_normal(shape=(batch,dim))
-		return self.z_mean + K.exp(0.5*self.z_log_var)*epsilon
-
-	def get_loss(self, inputs, outputs):
-		global beta
-		reconstruction_loss = mse(inputs[:,:2049],outputs)
-		kl_loss = 1+self.z_log_var-K.square(self.z_mean)-K.exp(self.z_log_var)
-		kl_loss = K.sum(kl_loss, axis=-1)
-		kl_loss *= -0.5*beta
-		vae_loss = K.sum(reconstruction_loss+kl_loss)
-		return vae_loss
-
 	def my_mse(self, inputs, outputs):
 		return mse(inputs[:,:4098],outputs)
 
@@ -111,12 +87,6 @@ class Manne:
 		outloss = K.sum(mse(inspec1,outspec1)+mse(inspec2,outspec2))
 		return outloss
 
-	def my_kl(self, inputs, outputs):
-		kl_loss = 1+self.z_log_var-K.square(self.z_mean)-K.exp(self.z_log_var)
-		kl_loss = K.sum(kl_loss, axis=-1)
-		kl_loss *= -0.5
-		return kl_loss
-
 	def load_net(self):
 		enc_filename = os.path.join(os.getcwd(),'models/'+self.trained_model_name+'_trained_encoder.h5')
 		print(enc_filename)
@@ -125,7 +95,7 @@ class Manne:
 		self.decoder = load_model(dec_filename,custom_objects={'sampling': self.sampling}, compile=False)
 
 	def load_dataset(self):
-		filename = 'frames/'+self.filename_in_1+'_frames.npy'	#Static Data used for training net
+		filename = 'frames/'+self.filename_in+'_frames.npy'	#Static Data used for training net
 		filepath = os.path.join(os.getcwd(),filename)
 		orig_frames = np.load(filepath)
 		orig_frames_1 = np.asarray(orig_frames)
@@ -139,19 +109,19 @@ class Manne:
 		orig_frames_1 = None
 
 
-		if args.filename_in_1 == 'one_octave':
+		if args.filename_in == 'one_octave':
 			self.X_train = self.frames[:16685,:]
 			self.X_val = self.frames[16685:17998,:]
 			self.X_test = self.frames[17998:,:]
-		elif args.filename_in_1 == 'five_octave':
+		elif args.filename_in == 'five_octave':
 			self.X_train = self.frames[:78991,:]
 			self.X_val = self.frames[78991:84712,:]
 			self.X_test = self.frames[84712:,:]
-		elif args.filename_in_1 == 'guitar':
+		elif args.filename_in == 'guitar':
 			self.X_train = self.frames[:62018,:]
 			self.X_val = self.frames[62018:66835,:]
 			self.X_test = self.frames[66835:,:]
-		elif args.filename_in_1 == 'violin':
+		elif args.filename_in == 'violin':
 			self.X_train = self.frames[:90571,:]
 			self.X_val = self.frames[90571:100912,:]
 			self.X_test = self.frames[100912:,:]
@@ -165,10 +135,8 @@ class Manne:
 
 	def define_net(self):
 		global decoder_outdim
-		if self.net_type=='vae':
-			l2_penalty = 0
-		else:
-			l2_penalty = 1e-7
+
+		l2_penalty = 1e-7
 
 		self.encoder_widths = [256,128,64,32,16,15]
 		self.decoder_widths = [16,32,64,128,256]
@@ -191,24 +159,9 @@ class Manne:
 			encoded1 = LeakyReLU(alpha=alpha_val)(encoded1)
 
 		encoded1 = Dense(units=self.encoder_widths[-1], activation='sigmoid', kernel_regularizer=l2(l2_penalty))(encoded1)
-
-
 		self.encoder = Model(inputs=[input_spec1], outputs=[encoded1])
 
-		if self.net_type == 'vae':
-			self.z_mean = Dense(self.encoder_widths[-1],input_shape=(self.encoder_widths[-1],), name='z_mean')(encoded)
-			self.z_log_var = Dense(self.encoder_widths[-1],input_shape=(self.encoder_widths[-1],), name='z_log_var')(encoded)
-			z = Lambda(self.sampling,output_shape=(self.encoder_widths[-1],), name='z')([self.z_mean,self.z_log_var])
-			self.encoder = Model(input_spec, [self.z_mean, self.z_log_var, z])
-		else:
-			a = 1
-
-		if self.skip == True:
-			input_latent1 = Input(shape=(self.encoder_widths[-1],))
-		else:
-			input_latent = Input(shape=(self.encoder_widths[-1]*2,))
-
-
+		input_latent1 = Input(shape=(self.encoder_widths[-1],))
 		decoded1 = Dense(units=self.decoder_widths[0],
 			activation=None,
 			kernel_regularizer=l2(l2_penalty))(input_latent1)
@@ -243,35 +196,18 @@ class Manne:
 	def train_net(self):
 		global decoder_outdim
 		adam_rate = 1e-4
-		if self.skip == True: #Handling case where Keras expects two inputs
-			train_data = [self.X_train[:,:2049]]
-			train_target = [self.X_train[:,:2049]]
-			val_data = [self.X_val[:,:2049]]
-			val_target = [self.X_val[:,:2049]]
-		else:
-			train_data = self.X_train
-			val_data = self.X_val
-		if self.net_type == 'vae':
-			beta_changer = LambdaCallback(on_epoch_end=change_params)
-			self.network.compile(optimizer=Adam(lr=adam_rate), loss=self.get_loss, metrics=[self.my_mse, self.my_kl])
-			self.network.fit(x=train_data, y=self.X_train,
-					epochs=self.n_epochs,
-					batch_size=200,
-					shuffle=True,
-					validation_data=(val_data, self.X_val),
-					callbacks=[beta_changer]
-					)
+		train_data = [self.X_train[:,:2049]]
+		train_target = [self.X_train[:,:2049]]
+		val_data = [self.X_val[:,:2049]]
+		val_target = [self.X_val[:,:2049]]
 
-		else:
-			alpha_changer = LambdaCallback(on_epoch_end=change_params)
-			self.network.compile(optimizer=Adam(lr=adam_rate), loss=mse)
-			self.network.fit(x=train_data, y=train_target,
-					epochs=self.n_epochs,
-					batch_size=200,
-					shuffle=True,
-					validation_data=(val_data, val_target),
-					callbacks=[alpha_changer]
-					)
+		self.network.compile(optimizer=Adam(lr=adam_rate), loss=mse)
+		self.network.fit(x=train_data, y=train_target,
+				epochs=self.n_epochs,
+				batch_size=200,
+				shuffle=True,
+				validation_data=(val_data, val_target)
+				)
 
 
 		modalpha1 = Input(shape=(self.encoder_widths[-1],))
@@ -288,41 +224,27 @@ class Manne:
 		final_decoded = self.decoder([mod_latent1])
 		self.dnb_net = Model(inputs=[final_spec_1,final_spec_2,modalpha1,modnegalpha1],
 			outputs=final_decoded)
-
-
-		self.dnb_net.save('models/'+self.net_type+'_'+self.filename_out+'_trained_network.h5')
+		self.dnb_net.save('models/'+self.filename_out+'_trained_network.h5')
 
 	def save_latents(self):
-
 		indat = self.frames
 		enc_mag = self.encoder.predict(indat,verbose=1)
-
-		if self.net_type == 'vae':
-			a = enc_mag[0]
-			b = enc_mag[1]
-			print(a.shape)
-			print(b.shape)
-			enc_mag = np.hstack((enc_mag[0],enc_mag[1]))
-
 		df = pd.DataFrame(enc_mag)
 		df.to_csv('encoded_mags.csv')
 
 
 	def evaluate_net(self):
-		if self.skip == True: #Handling case where Keras expects two inputs
-			test_data = self.X_test[:,:2049]
-			test_target = self.X_test[:,:2049]
-			val_data = self.X_val[:,:2049]
-			val_target = self.X_val[:,:2049]
-		else:
-			test_data = self.X_test
-			val_data = self.X_val
+		test_data = self.X_test[:,:2049]
+		test_target = self.X_test[:,:2049]
+		val_data = self.X_val[:,:2049]
+		val_target = self.X_val[:,:2049]
 
-		if args.filename_in_1 == 'one_octave':
+
+		if args.filename_in == 'one_octave':
 			mod = 1
-		elif args.filename_in_1 == 'five_octave' or args.filename_in_1 == 'violin':
+		elif args.filename_in == 'five_octave' or args.filename_in == 'violin':
 			mod = 10
-		elif args.filename_in_1 == 'guitar':
+		elif args.filename_in == 'guitar':
 			mod = 3
 		else:
 			mod = 1
@@ -360,7 +282,7 @@ class Manne:
 			plt.xlabel('Frequency (Hz)')
 			plt.title('Output Spectrum')
 			plt.tight_layout()
-			plotname = self.net_type+'_drums_'+str(frame)+'.pdf'
+			plotname = '_drums_'+str(frame)+'.pdf'
 			plt.savefig(plotname, format = 'pdf', bbox_inches='tight')
 			plt.clf()
 
@@ -380,7 +302,7 @@ class Manne:
 			plt.xlabel('Frequency (Hz)')
 			plt.title('Output Spectrum')
 			plt.tight_layout()
-			plotname = self.net_type+'_bass_'+str(frame)+'.pdf'
+			plotname = '_bass_'+str(frame)+'.pdf'
 			plt.savefig(plotname, format = 'pdf', bbox_inches='tight')
 			plt.clf()
 
