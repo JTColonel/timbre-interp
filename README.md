@@ -19,7 +19,17 @@ source venv/bin/activate
 pip install -r 3req.txt
 ```
 
-To start the program, run 
+In order to generate a corpus to train your autoencoder, run wav2frames.py on the wav file of your choice
+```
+python wav2frames.py --filename_in=my_audio.wav --filename_out=my_corpus
+```
+
+Then, to train an autoencoder, run 
+```
+python train-network.py --filename_in=my_corpus --filename_out=my_embedding --n_epochs=100
+```
+
+To start the timbre interpolation program, run 
 
 ```
 python timbre-interp.py
