@@ -1,10 +1,6 @@
 # timbre-interp
 Autoencoder Based Real-Time Timbre Interpolation Algorithm 
 
-This repo will host a Python implementation of a real-time timbre interpolation algorithm
-
-Tensorflow based
-
 Tested with Python 3.6.6 
 
 This application requires Ffmpeg and Port Audio 
@@ -22,8 +18,6 @@ python -m venv venv/
 source venv/bin/activate
 pip install -r 3req.txt
 ```
-
-
 
 To start the program, run 
 
