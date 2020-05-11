@@ -2,18 +2,19 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import tensorflow as tf 
-import keras
-from keras.layers import Input, Dense, Lambda, Concatenate, Dropout, LeakyReLU, Multiply, Add
-from keras.models import Model, Sequential, load_model, clone_model
-from keras.activations import linear
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior() 
+import tensorflow.keras 
+from tensorflow.keras.layers import Input, Dense, Lambda, Concatenate, Dropout, LeakyReLU, Multiply, Add
+from tensorflow.keras.models import Model, Sequential, load_model, clone_model
+from tensorflow.keras.activations import linear
 
-from keras.regularizers import l2
-from keras.losses import mse
-from keras.callbacks import LambdaCallback
-from keras.optimizers import Adam
+from tensorflow.keras.regularizers import l2
+from tensorflow.keras.losses import mse
+from tensorflow.keras.callbacks import LambdaCallback
+from tensorflow.keras.optimizers import Adam
 
-from keras import backend as K
+from tensorflow.python.keras import backend as K
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -58,8 +59,8 @@ class Manne:
 		self.encoder_widths = []
 		self.decoder_widths = []
 
-		self.z_mean = K.placeholder(shape=(8,))
-		self.z_log_var = K.placeholder(shape=(8,))
+		# self.z_mean = K.placeholder(shape=(8,))
+		# self.z_log_var = K.placeholder(shape=(8,))
 		self.beta_changer = []
 
 		self.n_epochs = args.n_epochs

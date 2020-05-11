@@ -1,4 +1,4 @@
-from Tkinter import *
+from tkinter import *
 import numpy as np
 import pandas as pd
 import os
@@ -7,9 +7,10 @@ import soundfile as sf
 import argparse
 import pyaudio
 import numpy as np
-from keras.layers import Input, Dense, LeakyReLU
-from keras.models import Model, load_model
-import tensorflow as tf 
+from tensorflow.keras.layers import Input, Dense, LeakyReLU
+from tensorflow.keras.models import Model, load_model
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior() 
 from scipy import signal
 import time
 import sys
@@ -76,7 +77,9 @@ class Application(Frame):
         E = out_mag*np.exp(1j*temp_phase)
         _, now_out = np.float32(signal.istft(0.24*E, fs=44100, noverlap=3*1024))
         out = now_out[CHUNK:-2*CHUNK]
-        new_data = out.reshape(((len(out)/CHUNK),CHUNK))
+        newdim = int(len(out)/CHUNK)
+        print(len(out)/CHUNK)
+        new_data = out.reshape((newdim,CHUNK))
 
     global callback 
     def callback(in_data, frame_count, time_info, status):
@@ -204,7 +207,7 @@ class Application(Frame):
         global full_net
         global full_net_graph
 
-        data_path_net = os.path.join(os.getcwd(),self.model_name.get()+'_trained_bass.h5')
+        data_path_net = os.path.join(os.getcwd(),self.model_name.get()+'_trained_network.h5')
         full_net = load_model(data_path_net, compile=False)
         full_net._make_predict_function()
         full_net_graph = tf.get_default_graph()
