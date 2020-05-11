@@ -138,7 +138,7 @@ class Manne:
 
 		l2_penalty = 1e-7
 
-		self.encoder_widths = [256,128,64,32,16,15]
+		self.encoder_widths = [256,128,64,32,16,10]
 		self.decoder_widths = [16,32,64,128,256]
 
 
