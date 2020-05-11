@@ -45,4 +45,7 @@ Clicking "PAUSE" will pause the audio output and freeze the track where it is. I
 
 Clicking "QUIT" will close the application.
 
+Example with drum loops: 
+https://youtu.be/7_VxFqUT_HE 
+
 
