@@ -5,23 +5,30 @@ This repo will host a Python implementation of a real-time timbre interpolation 
 
 Tensorflow based
 
-Tested with Python 2.7.12 
+Tested with Python 3.6.6 
+
+This application requires Ffmpeg and Port Audio 
+
+```
+sudo apt-get install libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0
+sudo apt-get install ffmpeg libav-tools
+```
 
 I suggest using a virtualenvironment to ensure that all packages are correct
 
 ```
 mkdir venv
-virtualenv venv
+python -m venv venv/
 source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-From what I remember, this application requires ffmpeg and portaudio19-dev 
+
 
 To start the program, run 
 
 ```
-python manne_gui.py
+python timbre-interp.py
 ```
 
 Type the relative path of the track you would like to filter into the "Track Name" box.
@@ -39,5 +46,4 @@ To end a recording, just click the "RECORD" button again so that it is unchecked
 
 Clicking "QUIT" will close the application.
 
-sudo apt-get install python3.6-tk
 
