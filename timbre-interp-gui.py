@@ -414,7 +414,7 @@ class Application(Frame):
 
 global app 
 global num_latents
-num_latents = int(sys.argv[1])
+num_latents = int(10)
 root = Tk()
 app = Application(master=root)
 app.mainloop()
