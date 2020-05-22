@@ -45,7 +45,10 @@ Clicking "PAUSE" will pause the audio output and freeze the track where it is. I
 
 Clicking "QUIT" will close the application.
 
-Example with drum loops: 
+Example with harmonic conent and drum loops:
+https://youtu.be/o_t3JXFlDvg
+
+Example with two drum loops: 
 https://youtu.be/7_VxFqUT_HE 
 
 
