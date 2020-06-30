@@ -16,6 +16,7 @@ I suggest using a virtualenvironment to ensure that all packages are correct
 mkdir venv
 python -m venv venv/
 source venv/bin/activate
+pip install --upgrade pip setuptools
 pip install -r 3req.txt
 ```
 
