@@ -1,6 +1,15 @@
 # timbre-interp
 Autoencoder Based Real-Time Timbre Interpolation Algorithm 
 
+Example of interpolating between two timbres, no morphing: 
+https://youtu.be/qu0Qozt_JNg
+
+Example with harmonic conent and drum loops:
+https://youtu.be/o_t3JXFlDvg
+
+Example with two drum loops: 
+https://youtu.be/7_VxFqUT_HE 
+
 Tested with Python 3.6.6 
 
 This application requires Ffmpeg and Port Audio 
@@ -46,10 +55,6 @@ Clicking "PAUSE" will pause the audio output and freeze the track where it is. I
 
 Clicking "QUIT" will close the application.
 
-Example with harmonic conent and drum loops:
-https://youtu.be/o_t3JXFlDvg
 
-Example with two drum loops: 
-https://youtu.be/7_VxFqUT_HE 
 
 
