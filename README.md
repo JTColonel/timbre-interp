@@ -4,11 +4,15 @@ Autoencoder Based Real-Time Timbre Interpolation Algorithm
 Example of interpolating between two timbres, no morphing: 
 https://youtu.be/qu0Qozt_JNg
 
+Example of interpolating between the same two timbres, but with morphing:
+https://youtu.be/95sTJ9Whc7A
+
 Example with harmonic conent and drum loops:
 https://youtu.be/o_t3JXFlDvg
 
 Example with two drum loops: 
 https://youtu.be/7_VxFqUT_HE 
+
 
 Tested with Python 3.6.6 
 
