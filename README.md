@@ -36,7 +36,7 @@ To start the timbre interpolation program, run
 python timbre-interp.py
 ```
 
-Type the relative path of the tracks you would like to filter into the "Track" boxes.
+Type the name of the tracks you would like to filter into the "Track" boxes. Be sure these audio files are placed in the ```audio``` directory.
 
 Type the prefix of the trained model you would like to run (in this case just ```my_embedding```) into the "Model Name" box.
 
