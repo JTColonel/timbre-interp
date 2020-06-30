@@ -37,4 +37,4 @@ print(np.shape(temp))
 output = temp[~np.all(temp == 0, axis=1)]
 out_phase = phase[~np.all(temp == 0, axis=1)]
 print(np.shape(output))
-np.save('frames/'+filename_out+'.npy',output)
+np.save('frames/'+filename_out+'_frames.npy',output)
