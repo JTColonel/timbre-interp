@@ -19,7 +19,7 @@ args = get_arguments()
 len_window = 4096 #Specified length of analysis window
 hop_length_ = 1024 #Specified percentage hop length between windows
 
-filename_in = args.filename_in
+filename_in = 'audio/'+args.filename_in
 filename_out = args.filename_out
 data_path = os.path.join(os.getcwd(),filename_in)
 y, sr = librosa.load(data_path, sr=44100)
