@@ -207,7 +207,7 @@ class Application(Frame):
         global full_net
         global full_net_graph
 
-        data_path_net = os.path.join(os.getcwd(),self.model_name.get()+'_trained_network.h5')
+        data_path_net = os.path.join(os.getcwd(),'models/'+self.model_name.get()+'_trained_network.h5')
         full_net = load_model(data_path_net, compile=False)
         full_net._make_predict_function()
         full_net_graph = tf.get_default_graph()
@@ -226,11 +226,11 @@ class Application(Frame):
         len_window = 4096 #Specified length of analysis window
         hop_length_ = 1024 #Specified percentage hop length between windows
 
-        filename_in = self.track1_name.get()
+        filename_in = 'audio/'+self.track1_name.get()
         data_path = os.path.join(os.getcwd(),filename_in)
         track1, _ = librosa.load(data_path, sr=44100, mono=True)
 
-        filename_in = self.track2_name.get()
+        filename_in = 'audio/'+self.track2_name.get()
         data_path = os.path.join(os.getcwd(),filename_in)
         track2, _ = librosa.load(data_path, sr=44100, mono=True)
 
