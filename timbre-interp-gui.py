@@ -19,7 +19,7 @@ import scipy, pylab
 RATE     = int(44100)
 CHUNK    = int(1024)
 CHANNELS = int(1)
-NUM_CHUNKS = 10
+NUM_CHUNKS = 5
 ind = 0
 proc_ind = 2
 len_window = 4096 #Specified length of analysis window
