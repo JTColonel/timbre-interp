@@ -20,7 +20,7 @@ pip install --upgrade pip setuptools
 pip install -r 3req.txt
 ```
 
-In order to generate a corpus to train your autoencoder, run wav2frames.py on the wav file of your choice
+In order to generate a corpus to train your autoencoder, run wav2frames.py on the wav file of your choice. Please ensure the audio file is placed in the ```audio``` directory.
 ```
 python wav2frames.py --filename_in=my_audio.wav --filename_out=my_corpus
 ```
